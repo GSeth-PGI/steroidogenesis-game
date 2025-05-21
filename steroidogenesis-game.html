@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Steroidogenesis Pathway Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      color: #333;
+    }
+    #game {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    #compound, #prompt, #status {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+    .enzyme-button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      transition: background 0.3s ease;
+    }
+    .enzyme-button:hover {
+      background-color: #0056b3;
+    }
+    #try-again {
+      margin-top: 15px;
+      display: none;
+      background-color: #28a745;
+    }
+  </style>
+</head>
+<body>
+  <h1>Steroidogenesis Pathway Game</h1>
+  <div id="game">
+    <div id="prompt">Loading...</div>
+    <div id="compound">...</div>
+    <div>
+      <button class="enzyme-button" onclick="applyEnzyme('cholesterol desmolase')">Cholesterol desmolase</button>
+      <button class="enzyme-button" onclick="applyEnzyme('3B-hydroxysteroid dehydrogenase')">3β-HSD</button>
+      <button class="enzyme-button" onclick="applyEnzyme('21B-hydroxylase')">21β-Hydroxylase</button>
+      <button class="enzyme-button" onclick="applyEnzyme('11B-hydroxylase')">11β-Hydroxylase</button>
+      <button class="enzyme-button" onclick="applyEnzyme('Aldosterone synthase')">Aldosterone Synthase</button>
+      <button class="enzyme-button" onclick="applyEnzyme('17a-hydroxylase')">17α-Hydroxylase</button>
+      <button class="enzyme-button" onclick="applyEnzyme('17,20-lyase')">17,20-Lyase</button>
+      <button class="enzyme-button" onclick="applyEnzyme('No enzyme')">No Enzyme</button>
+    </div>
+    <div id="status"></div>
+    <button id="try-again" class="enzyme-button" onclick="startGame()">Try Again</button>
+  </div>
+
+  <script>
+    const endProducts = ["Aldosterone", "Cortisol", "Testosterone"];
+    const startCompounds = ["Cholesterol", "Pregnenolone", "Progesterone"];
+    let currentCompound = "";
+    let targetProduct = "";
+
+    const enzymeMap = {
+      "cholesterol desmolase": {
+        "Cholesterol": "Pregnenolone"
+      },
+      "3B-hydroxysteroid dehydrogenase": {
+        "Pregnenolone": "Progesterone",
+        "17-Hydroxypregnenolone": "17-Hydroxyprogesterone",
+        "Dehydroepiandrosterone": "Androstenedione"
+      },
+      "21B-hydroxylase": {
+        "Progesterone": "11-Deoxycorticosterone",
+        "17-Hydroxyprogesterone": "11-Deoxycortisol"
+      },
+      "11B-hydroxylase": {
+        "11-Deoxycorticosterone": "Corticosterone",
+        "11-Deoxycortisol": "Cortisol"
+      },
+      "Aldosterone synthase": {
+        "Corticosterone": "Aldosterone"
+      },
+      "17a-hydroxylase": {
+        "Pregnenolone": "17-Hydroxypregnenolone",
+        "Progesterone": "17-Hydroxyprogesterone"
+      },
+      "17,20-lyase": {
+        "17-Hydroxypregnenolone": "Dehydroepiandrosterone",
+        "17-Hydroxyprogesterone": "Androstenedione"
+      },
+      "No enzyme": {
+        "Androstenedione": "Testosterone"
+      }
+    };
+
+    function startGame() {
+      currentCompound = startCompounds[Math.floor(Math.random() * startCompounds.length)];
+      targetProduct = endProducts[Math.floor(Math.random() * endProducts.length)];
+      document.getElementById("compound").textContent = "Current: " + currentCompound;
+      document.getElementById("prompt").textContent = "Give me: " + targetProduct;
+      document.getElementById("status").textContent = "";
+      document.getElementById("try-again").style.display = "none";
+    }
+
+    function applyEnzyme(enzyme) {
+      const validConversions = enzymeMap[enzyme];
+      if (validConversions && validConversions[currentCompound]) {
+        currentCompound = validConversions[currentCompound];
+        document.getElementById("compound").textContent = "Current: " + currentCompound;
+        if (currentCompound === targetProduct) {
+          document.getElementById("status").textContent = "🎉 Good job!";
+          document.getElementById("try-again").style.display = "inline-block";
+        } else if (endProducts.includes(currentCompound)) {
+          document.getElementById("status").textContent = "❌ Game Over: You made the wrong final product.";
+          document.getElementById("try-again").style.display = "inline-block";
+        }
+      } else {
+        document.getElementById("status").textContent = "❌ Game Over: Invalid enzyme for current compound.";
+        document.getElementById("try-again").style.display = "inline-block";
+      }
+    }
+
+    // Start the game on load
+    startGame();
+  </script>
+
+<p style="margin-top: 30px; font-size: 0.8em; color: #666;">Game Concept by Gurrea, Seth Laurence</p>
+
+</body>
+</html>
